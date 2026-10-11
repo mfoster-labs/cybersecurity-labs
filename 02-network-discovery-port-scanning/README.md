@@ -32,9 +32,51 @@ Commands, observations, and screenshots will be documented throughout the lab.
 
 ## 1. Network Validation
 
-Verify that all three virtual machines have the correct network configurations and can communicate within the isolated network.
+Before beginning the scans, I verified that the three virtual machines retained their network configurations from Lab 01.
 
-*Documentation and screenshots to be added.*
+On Kali, I checked the IP address and routing table using:
+
+```bash
+ip address show dev eth0
+ip route
+```
+
+On the Ubuntu Observer, I used the same commands with its `enp0s3` network interface:
+
+```bash
+ip address show dev enp0s3
+ip route
+```
+
+On Metasploitable 2, I used:
+
+```bash
+ifconfig eth0
+route -n
+```
+
+All three systems retained their assigned static IP addresses on the `10.10.10.0/24` subnet. Each system had a route to the local network and no default gateway configured.
+
+I then tested connectivity from Kali to Metasploitable 2 and the Ubuntu Observer:
+
+```bash
+ping -c 2 10.10.10.20
+ping -c 2 10.10.10.30
+```
+
+Both systems responded successfully with 0% packet loss.
+
+![Kali connectivity validation](images/01-kali-connectivity.png)
+
+I also tested connectivity from the Ubuntu Observer to Metasploitable 2:
+
+```bash
+ping -c 2 10.10.10.20
+```
+
+This test also completed successfully with 0% packet loss.
+
+These results confirmed that all three virtual machines could communicate within the isolated lab network and were ready for scanning.
 
 ## 2. Host Discovery
 
