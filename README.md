@@ -5,3 +5,6 @@ Hands-on cybersecurity labs covering network analysis, vulnerability assessment,
 
 ### [Lab 01 - Isolated Cybersecurity Lab Environment](01-isolated-lab-environment/)
 Built an isolated VirtualBox environment using Kali Linux, Ubuntu, and Metasploitable 2 for future offensive and defensive security exercises.
+
+### [Lab 02 - Network Discovery and Port Scanning](02-network-discovery-port-scanning/)
+Using Nmap to discover active hosts, perform TCP and UDP port scans, and analyze network traffic with Wireshark.
