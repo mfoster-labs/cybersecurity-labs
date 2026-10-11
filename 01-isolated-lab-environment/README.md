@@ -427,3 +427,14 @@ I also got experience configuring networking in three different ways: NetworkMan
 Troubleshooting the Ubuntu Observer also showed me the importance of checking the underlying configuration when settings do not behave as expected instead of assuming the first configuration change worked.
 
 Finally, setting up the Observer and verifying that it could capture traffic between Kali and Metasploitable helped me better understand promiscuous mode and how a separate monitoring system can be used to observe traffic during future security exercises.
+
+## References
+
+- [Oracle VirtualBox Documentation](https://www.virtualbox.org/manual/)
+- [Kali Linux Documentation](https://www.kali.org/docs/)
+- [Kali Linux Tools](https://www.kali.org/tools/)
+- [Ubuntu Documentation](https://documentation.ubuntu.com/)
+- [NetworkManager Documentation](https://networkmanager.dev/docs/)
+- [Netplan Documentation](https://netplan.readthedocs.io/)
+- [Wireshark Documentation](https://www.wireshark.org/docs/)
+- [Rapid7 Metasploitable 2](https://docs.rapid7.com/metasploit/metasploitable-2/)
