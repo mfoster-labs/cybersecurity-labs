@@ -80,11 +80,66 @@ These results confirmed that all three virtual machines could communicate within
 
 ## 2. Host Discovery
 
-Use Nmap to identify active systems on the lab network.
+After confirming network connectivity, I used Nmap on Kali Linux to identify active hosts on the `10.10.10.0/24` network.
 
-Capture and examine the discovery traffic in Wireshark to identify the protocols and packets used.
+Before starting the scan, I opened Wireshark on the Ubuntu Observer and began capturing traffic on the `enp0s3` interface.
 
-*Documentation and screenshots to be added.*
+I then ran the following command from Kali:
+
+```bash
+nmap -sn 10.10.10.0/24
+```
+
+The `-sn` option tells Nmap to perform host discovery without conducting a port scan. The `10.10.10.0/24` argument specifies the network to scan.
+
+Nmap scanned 256 IP addresses and identified three active hosts:
+
+| IP Address | System | MAC Address |
+|---|---|---|
+| 10.10.10.10 | Kali Linux | Local scanning system |
+| 10.10.10.20 | Metasploitable 2 | 08:00:27:d3:c5:c0 |
+| 10.10.10.30 | Ubuntu Observer | 08:00:27:81:8b:a9 |
+
+The scan identified all three virtual machines on the isolated lab network.
+
+![Nmap host discovery results](images/02-nmap-host-discovery.png)
+
+### ARP Traffic Analysis
+
+After completing the scan, I examined the captured traffic in Wireshark.
+
+Because the systems were connected to the same local Ethernet network, Nmap used Address Resolution Protocol (ARP) requests to discover active hosts.
+
+The capture showed Kali broadcasting ARP requests across the subnet, asking which devices were associated with specific IP addresses.
+
+For example, Kali sent the following request for Metasploitable 2:
+
+`Who has 10.10.10.20? Tell 10.10.10.10`
+
+Metasploitable responded with its MAC address:
+
+`10.10.10.20 is at 08:00:27:d3:c5:c0`
+
+A similar exchange occurred with the Ubuntu Observer at `10.10.10.30`.
+
+![Wireshark ARP discovery analysis](images/03-arp-discovery-analysis.png)
+
+I inspected the Ethernet and ARP headers to examine how the requests and replies were structured.
+
+The ARP requests used the Ethernet broadcast destination `ff:ff:ff:ff:ff:ff`, allowing devices on the local network to receive them.
+
+The replies were sent directly to Kali's MAC address and contained the responding systems' IP and MAC addresses.
+
+The ARP headers distinguished the two message types using their operation codes:
+
+- Request: Opcode 1
+- Reply: Opcode 2
+
+I also noticed differences in the ARP traffic between the two systems. Metasploitable 2 received one ARP request and sent one reply, while Ubuntu received six requests and responded to all six.
+
+Metasploitable 2's ARP reply was 60 bytes, including 18 bytes of Ethernet padding. All six Ubuntu replies were 42 bytes, with no padding present in the captured frames.
+
+The captured traffic confirmed how Nmap used ARP responses to identify active systems and obtain their MAC addresses without performing a port scan.
 
 ## 3. TCP Port Scanning
 
