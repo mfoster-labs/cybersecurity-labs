@@ -143,11 +143,161 @@ The captured traffic confirmed how Nmap used ARP responses to identify active sy
 
 ## 3. TCP Port Scanning
 
-Use Nmap to scan the Metasploitable 2 target and identify open TCP ports.
+After discovering the active hosts, I used Nmap on Kali Linux to scan TCP ports on Metasploitable 2 (`10.10.10.20`).
 
-Examine the captured traffic in Wireshark to understand how TCP responses are used to determine whether ports are open, closed, or filtered.
+The objective was to identify open and closed TCP ports, compare different scanning techniques, and examine the corresponding network traffic in Wireshark.
 
-*Documentation and screenshots to be added.*
+### TCP SYN Scanning
+
+I began with a targeted TCP SYN scan of five ports:
+
+```bash
+sudo nmap -sS -p 21,22,80,443,65000 10.10.10.20
+```
+
+The `-sS` option performs a TCP SYN scan, while `-p` specifies which ports to scan.
+
+Nmap reported the following results:
+
+| Port | State | Service |
+|---|---|---|
+| 21/tcp | open | ftp |
+| 22/tcp | open | ssh |
+| 80/tcp | open | http |
+| 443/tcp | closed | https |
+| 65000/tcp | closed | unknown |
+
+![TCP SYN scan results](images/04-tcp-syn-scan.png)
+
+I captured the scan traffic using Wireshark on the Ubuntu Observer to examine how Nmap determined the port states.
+
+For open ports, Kali sent a TCP SYN packet and Metasploitable responded with SYN-ACK. Kali then sent RST to terminate the attempted connection without completing the TCP three-way handshake.
+
+For closed ports, Metasploitable responded to the SYN probe with RST-ACK, rejecting the connection attempt.
+
+I examined the TCP headers for both responses in Wireshark.
+
+The following capture shows the SYN-ACK response from port 22, indicating that the port was open.
+
+![Open TCP port SYN-ACK response](images/05-tcp-syn-open.png)
+
+The next capture shows the RST-ACK response from port 443, indicating that the port was closed.
+
+![Closed TCP port RST-ACK response](images/06-tcp-syn-closed.png)
+
+These responses demonstrated how Nmap distinguishes between TCP ports accepting connections and ports that are reachable but not accepting connections.
+
+### TCP Connect Scanning
+
+I also performed a TCP connect scan against port 22:
+
+```bash
+nmap -sT -p 22 10.10.10.20
+```
+
+The `-sT` option uses the operating system's TCP connection mechanism to establish a complete connection rather than performing a SYN-only scan.
+
+Nmap reported port 22 as open.
+
+The Wireshark capture showed the following sequence:
+
+1. Kali sent SYN to port 22.
+2. Metasploitable responded with SYN-ACK.
+3. Kali sent ACK, completing the TCP three-way handshake.
+4. Kali sent RST-ACK to terminate the connection.
+
+![TCP connect scan packet analysis](images/07-tcp-connect-analysis.png)
+
+Unlike the SYN scan, the TCP connect scan completed the three-way handshake before terminating the connection. This difference was visible in the captured TCP packets.
+
+### Default vs. Full TCP Port Scanning
+
+After examining individual ports, I performed a broader TCP SYN scan using Nmap's default port selection:
+
+```bash
+sudo nmap -sS 10.10.10.20
+```
+
+By default, Nmap scans the 1,000 most commonly used TCP ports.
+
+The scan identified 23 open ports and 977 closed ports.
+
+![Default TCP port scan results](images/08-tcp-default-scan.png)
+
+I then scanned the entire TCP port range:
+
+```bash
+sudo nmap -sS -p- 10.10.10.20
+```
+
+The `-p-` option specifies all 65,535 TCP ports.
+
+The full scan identified 30 open ports and 65,505 closed ports.
+
+![Full TCP port scan results](images/09-tcp-full-scan.png)
+
+Comparing the two scans revealed seven additional open ports that were not included in the default scan:
+
+| Port | Nmap Service Label |
+|---|---|
+| 3632/tcp | distccd |
+| 6697/tcp | ircs-u |
+| 8787/tcp | msgsrvr |
+| 33189/tcp | unknown |
+| 42837/tcp | unknown |
+| 45451/tcp | unknown |
+| 55971/tcp | unknown |
+
+The full scan discovered 30 open TCP ports compared with 23 in the default scan, demonstrating that scanning only the default 1,000 ports can miss additional open ports.
+
+The service names displayed by Nmap were based on known port associations rather than service/version detection. Identifying the actual services and software running on these ports will be covered in Lab 03.
+
+### TCP ACK and FIN Scan Comparison
+
+I also compared TCP ACK and FIN scanning techniques against port 22, which was open, and port 65000, which was closed.
+
+First, I performed a TCP ACK scan:
+
+```bash
+sudo nmap -sA -p 22,65000 10.10.10.20
+```
+
+The `-sA` option sends TCP ACK probes to investigate whether traffic is being filtered. Unlike SYN scanning, it does not directly determine whether a port is open or closed.
+
+Both ports were reported as `unfiltered`.
+
+I then performed a TCP FIN scan:
+
+```bash
+sudo nmap -sF -p 22,65000 10.10.10.20
+```
+
+The `-sF` option sends TCP FIN probes without first establishing a connection.
+
+The FIN scan reported port 22 as `open|filtered` and port 65000 as `closed`.
+
+![TCP ACK and FIN scan results](images/10-tcp-ack-fin-scans.png)
+
+The results were compared with the earlier SYN scan:
+
+| Port | SYN Scan | ACK Scan | FIN Scan |
+|---|---|---|---|
+| 22/tcp | open | unfiltered | open\|filtered |
+| 65000/tcp | closed | unfiltered | closed |
+
+I examined the ACK and FIN scan traffic in Wireshark to understand the differences in the responses.
+
+During the ACK scan, both ports responded with TCP RST packets. Nmap classified both as `unfiltered`, despite one port being open and the other closed.
+
+During the FIN scan, port 65000 responded with RST-ACK, while repeated FIN probes to port 22 received no response.
+
+![TCP ACK and FIN packet analysis](images/11-tcp-ack-fin-analysis.png)
+
+The `open|filtered` result for port 22 did not indicate that a firewall was blocking traffic. It meant Nmap could not determine whether the port was open and ignoring the FIN probes or whether the probes were being filtered.
+
+These experiments demonstrated how different TCP scanning techniques can produce different classifications for the same ports, depending on the probes sent and responses received.
+
+No ports were confirmed to be filtered during this lab. Testing how actual firewall filtering affects scan results was left for a future lab, since configuring firewall rules was outside the scope of this introductory port-scanning exercise.
 
 ## 4. UDP Port Scanning
 
