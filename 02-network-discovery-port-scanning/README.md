@@ -22,13 +22,13 @@ The network remains isolated from the host's normal network and the Internet.
 
 ## Methodology
 
-The lab will begin with network validation and host discovery, followed by TCP and UDP port scanning.
+I began by validating network connectivity and discovering active hosts, followed by TCP and UDP port scanning.
 
-Nmap will be used from Kali Linux to scan the lab network and the Metasploitable 2 target. Wireshark will be used on the Ubuntu Observer to capture and examine the network traffic generated during these scans.
+I used Nmap on Kali Linux to scan the lab network and Metasploitable 2. Wireshark was used on the Ubuntu Observer to capture and examine the traffic generated during these scans.
 
-Before each scan, I will review the relevant commands and options to understand their purpose and expected results. After running each scan, I will examine the output and captured packets to understand the responses.
+Before each scan, I reviewed the relevant commands and options to understand their purpose. After running each scan, I compared the Nmap results with the captured packets to understand how the responses determined port states.
 
-Commands, observations, and screenshots will be documented throughout the lab.
+The commands, observations, and screenshots were documented throughout the lab.
 
 ## 1. Network Validation
 
