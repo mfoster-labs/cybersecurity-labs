@@ -415,7 +415,15 @@ The Wireshark captures provided packet-level evidence of how Nmap determined por
 
 ## What I Learned
 
-*To be completed after the lab.*
+This lab helped me better understand how Nmap determines port states and how different scanning techniques affect the results.
+
+Examining the TCP traffic in Wireshark made the differences between SYN and connect scans much clearer. Comparing ACK and FIN scans also showed me that a port can receive different classifications depending on the type of probe being sent.
+
+I also learned why scanning beyond Nmap's default ports can be useful. The full TCP scan discovered seven additional open ports that the default scan missed.
+
+UDP scanning was more difficult to understand at first because it does not have a connection handshake like TCP. Examining DNS responses, ICMP Port Unreachable errors, and unanswered TFTP probes helped me understand why Nmap can identify some UDP ports confidently while others remain `open|filtered`. Seeing port 161 receive different classifications between scans reinforced that the results depend on the responses Nmap receives.
+
+Finally, examining the NetBIOS response from port 137 showed me how network traffic can reveal information about a target beyond whether a port is open. This provided an introduction to the service enumeration work planned for Lab 03.
 
 ## References
 
@@ -423,4 +431,5 @@ The Wireshark captures provided packet-level evidence of how Nmap determined por
 - [Nmap Host Discovery](https://nmap.org/book/man-host-discovery.html)
 - [Nmap Port Scanning Techniques](https://nmap.org/book/man-port-scanning-techniques.html)
 - [Nmap Port Scanning Basics](https://nmap.org/book/man-port-scanning-basics.html)
+- [Nmap UDP Scanning](https://nmap.org/book/scan-methods-udp-scan.html)
 - [Wireshark Documentation](https://www.wireshark.org/docs/)
