@@ -6,9 +6,9 @@
 
 ## 1. Service and Version Detection
 
-## 2. Manual Banner Grabbing
+## 2. Manual Service Identification
 
-## 3. Protocol-Specific Enumeration
+## 3. Targeted Service Enumeration
 
 ## 4. Findings
 
