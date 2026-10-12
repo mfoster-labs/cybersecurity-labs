@@ -301,11 +301,101 @@ No ports were confirmed to be filtered during this lab. Testing how actual firew
 
 ## 4. UDP Port Scanning
 
-Use Nmap to scan selected UDP ports on the Metasploitable 2 target.
+After completing the TCP scans, I used Nmap to investigate UDP ports on Metasploitable 2 (`10.10.10.20`).
 
-Analyze UDP and ICMP traffic in Wireshark to understand how UDP scanning differs from TCP scanning and why some port states cannot be determined conclusively.
+Unlike TCP, UDP does not use a connection handshake. Nmap relies on UDP responses, ICMP errors, and unanswered probes to determine port states.
 
-*Documentation and screenshots to be added.*
+### Targeted UDP Scanning
+
+I began by scanning the same five port numbers used during the earlier TCP SYN scan:
+
+```bash
+sudo nmap -sU -p 21,22,80,443,65000 --reason 10.10.10.20
+```
+
+The `-sU` option performs a UDP scan, while `--reason` displays why Nmap assigned each port state.
+
+| Port | TCP SYN Scan | UDP Scan |
+|---|---|---|
+| 21 | open | closed |
+| 22 | open | closed |
+| 80 | open | closed |
+| 443 | closed | closed |
+| 65000 | closed | closed |
+
+All five UDP ports were closed, even though TCP ports 21, 22, and 80 were open. This demonstrated that TCP and UDP use separate port spaces, and an open TCP port does not mean the corresponding UDP port is also open.
+
+I then scanned three ports associated with common UDP services:
+
+```bash
+sudo nmap -sU -p 53,69,161 --reason 10.10.10.20
+```
+
+| Port | State | Service Label | Reason |
+|---|---|---|---|
+| 53/udp | open | domain | udp-response |
+| 69/udp | open\|filtered | tftp | no-response |
+| 161/udp | closed | snmp | port-unreach |
+
+![Targeted UDP scan results](images/12-udp-targeted-scan.png)
+
+I captured both scans in Wireshark on the Ubuntu Observer to examine the responses:
+
+- **UDP 53:** Metasploitable responded to Nmap's DNS queries, confirming the port was open.
+- **UDP 69:** Kali sent TFTP probes, including read requests for `r7tftp.txt`, but received no response. Nmap reported `open|filtered` because it could not determine whether the port was open but silent or filtered.
+- **UDP 161:** Metasploitable returned ICMP Type 3, Code 3 (Port Unreachable), indicating the port was closed.
+
+The capture also showed Kali sending ICMP Port Unreachable errors after receiving DNS responses. These concerned temporary UDP ports on Kali rather than Metasploitable's DNS port.
+
+![UDP packet analysis in Wireshark](images/13-udp-packet-analysis.png)
+
+These results demonstrated why UDP scanning can be less conclusive than TCP scanning. Without a response, Nmap cannot always distinguish between an open port and filtered traffic.
+
+### Top-20 UDP Scanning
+
+After examining individual UDP ports, I performed a broader scan:
+
+```bash
+sudo nmap -sU --top-ports 20 --reason 10.10.10.20
+```
+
+The `--top-ports 20` option selects 20 commonly scanned UDP ports from Nmap's port-frequency database.
+
+The scan identified 2 open ports, 13 closed ports, and 5 `open|filtered` ports.
+
+The confirmed open ports were UDP 53 (DNS) and UDP 137 (NetBIOS Name Service).
+
+![Top 20 UDP port scan](images/14-udp-top-20-scan.png)
+
+One difference from the targeted scan was UDP port 161. It was previously reported as `closed`, but the broader scan reported `open|filtered`.
+
+The targeted scan received an ICMP Port Unreachable error, while the broader scan received no response. ICMP rate limiting is one possible explanation, although the exact cause was not confirmed.
+
+This demonstrated that UDP scan results can differ depending on the responses received, without necessarily indicating a change in the actual port state.
+
+#### NetBIOS Name Service Analysis
+
+The top-20 scan also discovered UDP port 137 as open.
+
+In Wireshark, I observed Kali sending NetBIOS Node Status (`NBSTAT`) queries and Metasploitable responding with its registered NetBIOS names.
+
+One response contained seven name entries:
+
+| Name | Registered Role |
+|---|---|
+| `METASPLOITABLE<00>` | Workstation/Redirector |
+| `METASPLOITABLE<03>` | Messenger service/Main name |
+| `METASPLOITABLE<20>` | Server service |
+| `__MSBROWSE__` | Network browsing |
+| `WORKGROUP<00>` | Workstation/Redirector |
+| `WORKGROUP<1D>` | Local Master Browser |
+| `WORKGROUP<1E>` | Browser Election Service |
+
+![NetBIOS Name Service packet analysis](images/15-udp-netbios-analysis.png)
+
+The NBNS response confirmed that UDP port 137 was open and revealed the target's computer name, workgroup, and registered network roles.
+
+This introduced service enumeration, where responses from discovered ports can provide additional information about a target. The TCP and UDP ports identified in Lab 02 will be investigated further in Lab 03.
 
 ## 5. Findings
 
