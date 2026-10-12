@@ -399,13 +399,19 @@ This introduced service enumeration, where responses from discovered ports can p
 
 ## 5. Findings
 
-Summarize the discovered hosts, TCP and UDP scan results, and relevant observations from the packet captures.
+The network discovery scan identified all three virtual machines on the isolated `10.10.10.0/24` network.
 
-*Findings to be added.*
+The TCP scans identified 23 open ports during the default scan and 30 during the full scan, revealing seven additional ports outside Nmap's default selection.
+
+The UDP scans confirmed ports 53 and 137 as open. Other UDP ports returned ICMP Port Unreachable errors or produced inconclusive `open|filtered` results. Port 161 also received different classifications between targeted and broader scans.
+
+Wireshark confirmed the packet behavior behind these results. The NBNS response from UDP port 137 additionally revealed the target's registered computer name, workgroup, and network roles.
 
 ## Result
 
-*To be completed after the lab.*
+Successfully discovered the active hosts and identified open TCP and UDP ports on Metasploitable 2 using Nmap.
+
+The Wireshark captures provided packet-level evidence of how Nmap determined port states. The identified ports will be used as a starting point for service enumeration in Lab 03.
 
 ## What I Learned
 
