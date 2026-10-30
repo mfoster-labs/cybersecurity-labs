@@ -15,3 +15,7 @@ Using Nmap service and version detection to identify TCP and UDP services, analy
 ### [Lab 04 - Vulnerability Assessment](04-vulnerability-assessment/)
 
 Performing deeper enumeration and targeted vulnerability assessment of selected services using vulnerability research, Nmap, configuration analysis, and Wireshark to identify weaknesses for further testing in Lab 05.
+
+### [Lab 05 - Controlled Exploitation](05-controlled-exploitation/)
+
+Performing controlled exploitation of vulnerabilities identified in Lab 04 using manual techniques, Nmap NSE, and Metasploit, with verification of exploitation results and network traffic analysis using Wireshark.
