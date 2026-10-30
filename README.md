@@ -19,3 +19,7 @@ Performing deeper enumeration and targeted vulnerability assessment of selected 
 ### [Lab 05 - Controlled Exploitation](05-controlled-exploitation/)
 
 Performing controlled exploitation of vulnerabilities identified in Lab 04 using manual techniques, Nmap NSE, and Metasploit, with verification of exploitation results and network traffic analysis using Wireshark.
+
+### [Lab 06 - Detection and Remediation](06-detection-remediation/)
+
+Investigating detection and mitigation of vulnerabilities exploited in Lab 05 using Suricata, Wireshark, defensive configuration changes, and controlled retesting to evaluate their effectiveness.
