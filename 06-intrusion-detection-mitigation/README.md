@@ -17,7 +17,7 @@ This lab continued using the isolated VirtualBox environment established in [Lab
 |---|---|---|
 | Kali Linux | `10.10.10.10` | Attacker system used to reproduce the exploitation techniques from [Lab 05](../05-controlled-exploitation/). |
 | Metasploitable 2 | `10.10.10.20` | Vulnerable target used for detection testing and defensive configuration changes. |
-| Ubuntu Observer | `10.10.10.30` | Network monitoring system running Suricata and EveBox, also used as a trusted client for authorized access testing. |
+| Ubuntu | `10.10.10.30` | Network monitoring system running Suricata and EveBox, also used as a trusted client for authorized access testing. |
 
 All three virtual machines communicated over the VirtualBox Internal Network `Labnet`, isolated from my home network and the Internet.
 
