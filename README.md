@@ -20,6 +20,6 @@ Performing deeper enumeration and targeted vulnerability assessment of selected 
 
 Performing controlled exploitation of vulnerabilities identified in Lab 04 using manual techniques, Nmap NSE, and Metasploit, with verification of exploitation results and network traffic analysis using Wireshark.
 
-### [Lab 06 - Detection and Remediation](06-detection-remediation/)
+### [Lab 06 - Intrusion Detection and Mitigation](06-detection-remediation/)
 
-Investigating detection and mitigation of vulnerabilities exploited in Lab 05 using Suricata, Wireshark, defensive configuration changes, and controlled retesting to evaluate their effectiveness.
+Investigating intrusion detection using Suricata and EveBox, developing and evaluating detection signatures, and implementing defensive configuration changes to mitigate vulnerabilities exploited in Lab 05.
