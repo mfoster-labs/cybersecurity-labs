@@ -114,11 +114,11 @@ After preparing the three virtual machines, I configured them to communicate thr
 
 The lab uses the `10.10.10.0/24` network with the following static IP addresses:
 
-| System | Role | IP Address |
+| Virtual Machine | IP Address | Role |
 |---|---|---|
-| Kali Linux | Attacker | 10.10.10.10/24 |
-| Ubuntu Observer | Packet Analysis / Monitoring | 10.10.10.30/24 |
-| Metasploitable 2 | Vulnerable Target | 10.10.10.20/24 |
+| Kali Linux | `10.10.10.10` | Attacker system used for security testing. |
+| Metasploitable 2 | `10.10.10.20` | Intentionally vulnerable target system. |
+| Ubuntu | `10.10.10.30` | Network observer used for packet capture and traffic analysis. |
 
 VirtualBox Internal Network mode allows the virtual machines attached to `Labnet` to communicate with each other without connecting that network to the Windows host's normal network or the Internet.
 
@@ -430,11 +430,11 @@ Finally, setting up the Observer and verifying that it could capture traffic bet
 
 ## References
 
-- [Oracle VirtualBox Documentation](https://www.virtualbox.org/manual/)
-- [Kali Linux Documentation](https://www.kali.org/docs/)
-- [Kali Linux Tools](https://www.kali.org/tools/)
-- [Ubuntu Documentation](https://documentation.ubuntu.com/)
-- [NetworkManager Documentation](https://networkmanager.dev/docs/)
-- [Netplan Documentation](https://netplan.readthedocs.io/)
-- [Wireshark Documentation](https://www.wireshark.org/docs/)
-- [Rapid7 Metasploitable 2](https://docs.rapid7.com/metasploit/metasploitable-2/)
+- [Oracle VirtualBox Documentation](https://www.virtualbox.org/manual/) - Documents virtual machine configuration, Internal Network mode, network adapters, and snapshots used to build the isolated environment.
+- [Kali Linux Documentation](https://www.kali.org/docs/) - Provides guidance for setting up and maintaining the Kali Linux attacker system.
+- [Kali Linux Tools](https://www.kali.org/tools/) - Documents the security tools checked and prepared for future lab exercises.
+- [Ubuntu Documentation](https://documentation.ubuntu.com/) - Provides documentation for configuring and maintaining the Ubuntu monitoring system.
+- [NetworkManager Documentation](https://networkmanager.dev/docs/) - Documents the `nmcli` commands and connection settings used to configure static IP addresses.
+- [Netplan Documentation](https://netplan.readthedocs.io/) - Explains the Ubuntu network configuration files and commands used to resolve conflicting network settings.
+- [Wireshark Documentation](https://www.wireshark.org/docs/) - Documents packet capture and network traffic analysis used to verify the Observer's monitoring functionality.
+- [Rapid7 Metasploitable 2](https://docs.rapid7.com/metasploit/metasploitable-2/) - Official documentation for the intentionally vulnerable Metasploitable 2 system used as the lab target.
