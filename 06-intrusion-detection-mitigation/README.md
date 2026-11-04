@@ -15,7 +15,7 @@ This lab continued using the isolated VirtualBox environment established in [Lab
 
 | Virtual Machine | IP Address | Role |
 |---|---|---|
-| Kali Linux | `10.10.10.10` | Attacker system used to reproduce the exploitation techniques from Lab 05. |
+| Kali Linux | `10.10.10.10` | Attacker system used to reproduce the exploitation techniques from [Lab 05](../05-controlled-exploitation/). |
 | Metasploitable 2 | `10.10.10.20` | Vulnerable target used for detection testing and defensive configuration changes. |
 | Ubuntu Observer | `10.10.10.30` | Network monitoring system running Suricata and EveBox, also used as a trusted client for authorized access testing. |
 
@@ -27,7 +27,7 @@ The Ubuntu Observer used Suricata 8.0.3 for network intrusion detection and EveB
 
 I began by configuring Suricata and EveBox on the Ubuntu Observer. Suricata monitored traffic on the isolated network, with `HOME_NET` configured as `10.10.10.20/32` to identify Metasploitable 2 as the protected target and `EXTERNAL_NET` defined as the networks outside that address. Suricata recorded events in `eve.json`, which EveBox used to provide an interface for investigating detections.
 
-I reproduced selected attacks from Lab 05 and examined the resulting alerts and network events. I investigated available signatures, enabled relevant existing rules, and developed or adapted detection rules where the original coverage was insufficient. I then retested the attacks and, where applicable, legitimate activity to evaluate detection accuracy and false positives.
+I reproduced selected attacks from [Lab 05](../05-controlled-exploitation/) and examined the resulting alerts and network events. I investigated available signatures, enabled relevant existing rules, and developed or adapted detection rules where the original coverage was insufficient. I then retested the attacks and, where applicable, legitimate activity to evaluate detection accuracy and false positives.
 
 After investigating detection coverage, I applied defensive changes to the vulnerable services, including firewall restrictions, service configuration changes, and access controls. I repeated relevant tests from Kali and the trusted Ubuntu client to determine whether unauthorized activity was prevented and legitimate functionality remained available.
 
@@ -39,7 +39,7 @@ I used VirtualBox snapshots to restore Metasploitable 2 to its original vulnerab
 
 #### Initial Detection Testing
 
-I began by reproducing the vsftpd 2.3.4 backdoor exploit from Lab 05 to investigate whether Suricata's existing rules would detect the attack.
+I began by reproducing the vsftpd 2.3.4 backdoor exploit from [Lab 05](../05-controlled-exploitation/) to investigate whether Suricata's existing rules would detect the attack.
 
 From Kali, I connected to Metasploitable 2's FTP service on TCP port 21 using Netcat. I submitted a username containing `:)`, followed by a password, which activated the backdoor shell on TCP port 6200. I then connected to the shell and executed `id`, confirming root access.
 
@@ -98,7 +98,7 @@ The two signatures provided complementary information about the same exploitatio
 
 #### Initial Detection Testing
 
-I began by reproducing the Samba command injection vulnerability exploited in Lab 05 to determine whether Suricata's existing rules could identify the attack.
+I began by reproducing the Samba command injection vulnerability exploited in [Lab 05](../05-controlled-exploitation/) to determine whether Suricata's existing rules could identify the attack.
 
 From Kali, I used `smbclient` to submit a crafted username containing a command enclosed in backticks. Although Samba returned `NT_STATUS_LOGON_FAILURE`, the vulnerable `username map script` functionality executed the injected command before authentication completed.
 
@@ -136,7 +136,7 @@ To address this detection gap, I searched for historical Samba detection signatu
 
 The historical rule examined the structure of legacy SMB1 authentication requests and included matching conditions associated with the `/=` prefix used by the Metasploit exploit.
 
-However, my testing in Lab 05 had demonstrated that the `/=` prefix was not required to exploit the vulnerability. I adapted the historical rule's SMB1 parsing approach and changed the relevant matching conditions to identify paired backticks instead.
+However, my testing in [Lab 05](../05-controlled-exploitation/) had demonstrated that the `/=` prefix was not required to exploit the vulnerability. I adapted the historical rule's SMB1 parsing approach and changed the relevant matching conditions to identify paired backticks instead.
 
 The adapted signature was assigned SID `1000002` (`LAB06 SMB1 Legacy Username Paired Backticks`).
 
@@ -164,7 +164,7 @@ These signatures therefore demonstrated detection of the exploitation methods te
 
 #### Initial Detection Testing
 
-I began by reproducing the distccd remote command execution vulnerability exploited in Lab 05 to investigate whether Suricata's existing rules could identify the attack.
+I began by reproducing the distccd remote command execution vulnerability exploited in [Lab 05](../05-controlled-exploitation/) to investigate whether Suricata's existing rules could identify the attack.
 
 From Kali, I used Nmap's `distcc-cve2004-2687` NSE script to test the vulnerability.
 
@@ -216,7 +216,7 @@ To reduce these false positives, I developed a custom signature, SID `1000003` (
 
 The historical signature matched the distcc protocol header, which was also present in legitimate requests. My custom rule retained the protocol header check but added a condition to identify a shell execution argument.
 
-Specifically, the rule looked for `DIST00000001` followed by `ARGV00000002sh` within the beginning of the request. This combination was intended to identify the shell-based execution methods used during the Lab 05 attacks rather than ordinary compilation commands.
+Specifically, the rule looked for `DIST00000001` followed by `ARGV00000002sh` within the beginning of the request. This combination was intended to identify the shell-based execution methods used during the [Lab 05](../05-controlled-exploitation/) attacks rather than ordinary compilation commands.
 
 I stored the new signature in `/etc/suricata/rules/lab06-distccd.rules`, updated `suricata.yaml` to load it instead of the historical rule, and restarted Suricata.
 
@@ -244,7 +244,7 @@ The investigation demonstrated the importance of testing detection signatures ag
 
 #### Detection Testing
 
-I reproduced the SQL injection vulnerability exploited in Lab 05 and examined the resulting activity in EveBox.
+I reproduced the SQL injection vulnerability exploited in [Lab 05](../05-controlled-exploitation/) and examined the resulting activity in EveBox.
 
 The injection successfully returned multiple user records, but Suricata did not generate an alert specifically identifying the attack.
 
@@ -253,15 +253,15 @@ I investigated the available Suricata signatures but did not find a relevant rul
 
 #### Detection Result and Limitations
 
-The testing identified a gap in Suricata's detection coverage for the SQL injection techniques used in Lab 05.
+The testing identified a gap in Suricata's detection coverage for the SQL injection techniques used in [Lab 05](../05-controlled-exploitation/).
 
-Unlike the more specific attack patterns investigated in the previous sections, SQL injection can involve different payload structures, encoding techniques, and application behavior. Developing and testing custom signatures to cover the SQL injection techniques demonstrated in Lab 05 would have required a more extensive investigation than the previous custom rules, so I left that work outside the scope of this lab.
+Unlike the more specific attack patterns investigated in the previous sections, SQL injection can involve different payload structures, encoding techniques, and application behavior. Developing and testing custom signatures to cover the SQL injection techniques demonstrated in [Lab 05](../05-controlled-exploitation/) would have required a more extensive investigation than the previous custom rules, so I left that work outside the scope of this lab.
 
 ### 1.5 NFS - Insecure Export Configuration
 
 #### Initial Detection Testing
 
-I reproduced the insecure NFS export exploitation demonstrated in Lab 05 to investigate whether Suricata could detect the activity.
+I reproduced the insecure NFS export exploitation demonstrated in [Lab 05](../05-controlled-exploitation/) to investigate whether Suricata could detect the activity.
 
 From Kali, I mounted Metasploitable 2's exported root filesystem using NFSv3 and created a file in the remote `/root` directory. The operation succeeded because the export allowed unrestricted client access and used `no_root_squash`, preserving the client's root privileges.
 
@@ -327,7 +327,7 @@ Firewall rule persistence after reboot is addressed in Section 2.6.
 
 I began by verifying that Samba's `username map script` option was enabled in `/etc/samba/smb.conf`.
 
-I reproduced the manual command injection from Lab 05 by sending a crafted SMB username containing a backtick-enclosed command to TCP port 139.
+I reproduced the manual command injection from [Lab 05](../05-controlled-exploitation/) by sending a crafted SMB username containing a backtick-enclosed command to TCP port 139.
 
 Although Samba returned `NT_STATUS_LOGON_FAILURE`, the injected command executed before authentication failed. I confirmed this by checking that the command had created a root-owned proof file in `/tmp`.
 
@@ -399,7 +399,7 @@ Firewall rule persistence after reboot is addressed in Section 2.6.
 
 #### Recommended Remediation
 
-The SQL injection vulnerability demonstrated in Lab 05 resulted from DVWA incorporating user-controlled input directly into a SQL query.
+The SQL injection vulnerability demonstrated in [Lab 05](../05-controlled-exploitation/) resulted from DVWA incorporating user-controlled input directly into a SQL query.
 
 The recommended remediation is to use parameterized queries, also known as prepared statements, with bound parameters.
 
@@ -417,7 +417,7 @@ Application-level code remediation was outside the scope of this lab, so I did n
 
 #### Vulnerable Configuration and Initial Testing
 
-I began by verifying the insecure NFS export configuration demonstrated in Lab 05.
+I began by verifying the insecure NFS export configuration demonstrated in [Lab 05](../05-controlled-exploitation/).
 
 Metasploitable 2 exported its entire root filesystem (`/`) to all clients using `*` and had `no_root_squash` enabled, allowing remote clients to retain root privileges when accessing the export.
 
@@ -535,7 +535,7 @@ The custom detection signatures were evaluated against the specific attack metho
 
 ## Result
 
-This lab built on the controlled exploitation performed in Lab 05 by investigating intrusion detection and mitigation for the five vulnerabilities.
+This lab built on the controlled exploitation performed in [Lab 05](../05-controlled-exploitation/) by investigating intrusion detection and mitigation for the five vulnerabilities.
 
 Using Suricata and EveBox, I evaluated existing detection signatures, enabled a relevant vsftpd signature, and developed or adapted custom rules for Samba and distccd. I also identified detection gaps involving DVWA SQL injection and the insecure NFS export configuration.
 
