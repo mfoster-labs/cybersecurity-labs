@@ -2,7 +2,7 @@
 
 ## Objective
 
-The goal of this lab is to use Nmap to discover active hosts and identify open TCP and UDP ports within the isolated network created in Lab 01.
+The goal of this lab is to use Nmap to discover active hosts and identify open TCP and UDP ports within the isolated network created in [Lab 01](../01-isolated-lab-environment/).
 
 Wireshark will also be used to capture and analyze the traffic generated during scanning to better understand how host discovery and port scanning work at the packet level.
 
@@ -10,11 +10,11 @@ Wireshark will also be used to capture and analyze the traffic generated during 
 
 This lab uses the three virtual machines configured in [Lab 01](../01-isolated-lab-environment/).
 
-| System | Role | IP Address |
+| Virtual Machine | IP Address | Role |
 |---|---|---|
-| Kali Linux | Scanning System | 10.10.10.10/24 |
-| Metasploitable 2 | Vulnerable Target | 10.10.10.20/24 |
-| Ubuntu Observer | Network Monitoring | 10.10.10.30/24 |
+| Kali Linux | `10.10.10.10` | Scanning system used for network discovery and port scanning. |
+| Metasploitable 2 | `10.10.10.20` | Intentionally vulnerable target used for network discovery and port scanning. |
+| Ubuntu | `10.10.10.30` | Network observer running Wireshark to capture and analyze traffic. |
 
 All three systems communicate through the VirtualBox Internal Network named `Labnet`, using the `10.10.10.0/24` subnet.
 
@@ -32,7 +32,7 @@ The commands, observations, and screenshots were documented throughout the lab.
 
 ## 1. Network Validation
 
-Before beginning the scans, I verified that the three virtual machines retained their network configurations from Lab 01.
+Before beginning the scans, I verified that the three virtual machines retained their network configurations from [Lab 01](../01-isolated-lab-environment/).
 
 On Kali, I checked the IP address and routing table using:
 
@@ -250,7 +250,7 @@ Comparing the two scans revealed seven additional open ports that were not inclu
 
 The full scan discovered 30 open TCP ports compared with 23 in the default scan, demonstrating that scanning only the default 1,000 ports can miss additional open ports.
 
-The service names displayed by Nmap were based on known port associations rather than service/version detection. Identifying the actual services and software running on these ports will be covered in Lab 03.
+The service names displayed by Nmap were based on known port associations rather than service/version detection. Identifying the actual services and software running on these ports will be covered in [Lab 03](../03-service-enumeration/).
 
 ### TCP ACK and FIN Scan Comparison
 
@@ -395,7 +395,7 @@ One response contained seven name entries:
 
 The NBNS response confirmed that UDP port 137 was open and revealed the target's computer name, workgroup, and registered network roles.
 
-This introduced service enumeration, where responses from discovered ports can provide additional information about a target. The TCP and UDP ports identified in Lab 02 will be investigated further in Lab 03.
+This introduced service enumeration, where responses from discovered ports can provide additional information about a target. The TCP and UDP ports identified in Lab 02 will be investigated further in [Lab 03](../03-service-enumeration/).
 
 ## 5. Findings
 
@@ -411,7 +411,7 @@ Wireshark confirmed the packet behavior behind these results. The NBNS response 
 
 Successfully discovered the active hosts and identified open TCP and UDP ports on Metasploitable 2 using Nmap.
 
-The Wireshark captures provided packet-level evidence of how Nmap determined port states. The identified ports will be used as a starting point for service enumeration in Lab 03.
+The Wireshark captures provided packet-level evidence of how Nmap determined port states. The identified ports will be used as a starting point for service enumeration in [Lab 03](../03-service-enumeration/).
 
 ## What I Learned
 
@@ -423,13 +423,13 @@ I also learned why scanning beyond Nmap's default ports can be useful. The full 
 
 UDP scanning was more difficult to understand at first because it does not have a connection handshake like TCP. Examining DNS responses, ICMP Port Unreachable errors, and unanswered TFTP probes helped me understand why Nmap can identify some UDP ports confidently while others remain `open|filtered`. Seeing port 161 receive different classifications between scans reinforced that the results depend on the responses Nmap receives.
 
-Finally, examining the NetBIOS response from port 137 showed me how network traffic can reveal information about a target beyond whether a port is open. This provided an introduction to the service enumeration work planned for Lab 03.
+Finally, examining the NetBIOS response from port 137 showed me how network traffic can reveal information about a target beyond whether a port is open. This provided an introduction to the service enumeration work planned for [Lab 03](../03-service-enumeration/).
 
 ## References
 
-- [Nmap Reference Guide](https://nmap.org/book/man.html)
-- [Nmap Host Discovery](https://nmap.org/book/man-host-discovery.html)
-- [Nmap Port Scanning Techniques](https://nmap.org/book/man-port-scanning-techniques.html)
-- [Nmap Port Scanning Basics](https://nmap.org/book/man-port-scanning-basics.html)
-- [Nmap UDP Scanning](https://nmap.org/book/scan-methods-udp-scan.html)
-- [Wireshark Documentation](https://www.wireshark.org/docs/)
+- [Nmap Reference Guide](https://nmap.org/book/man.html) - Documents Nmap's command-line options and scanning capabilities used throughout the lab.
+- [Nmap Host Discovery](https://nmap.org/book/man-host-discovery.html) - Explains host discovery techniques, including ARP, ICMP, and TCP-based discovery probes.
+- [Nmap Port Scanning Techniques](https://nmap.org/book/man-port-scanning-techniques.html) - Documents TCP SYN, TCP Connect, ACK, and FIN scanning techniques examined during the lab.
+- [Nmap Port Scanning Basics](https://nmap.org/book/man-port-scanning-basics.html) - Explains how Nmap determines port states such as `open`, `closed`, and `filtered`.
+- [Nmap UDP Scanning](https://nmap.org/book/scan-methods-udp-scan.html) - Describes UDP scanning behavior, responses, and the meaning of `open|filtered` results.
+- [Wireshark Documentation](https://www.wireshark.org/docs/) - Documents packet capture and protocol analysis used to examine discovery probes and port scanning traffic.
