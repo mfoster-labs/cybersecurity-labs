@@ -74,9 +74,7 @@ I also tested connectivity from the Ubuntu Observer to Metasploitable 2:
 ping -c 2 10.10.10.20
 ```
 
-This test also completed successfully with 0% packet loss.
-
-These results confirmed that all three virtual machines could communicate within the isolated lab network and were ready for scanning.
+All three systems responded successfully to the connectivity tests, confirming that they could communicate within the isolated lab network and were ready for scanning.
 
 ## 2. Host Discovery
 
@@ -345,7 +343,7 @@ I captured both scans in Wireshark on the Ubuntu Observer to examine the respons
 - **UDP 69:** Kali sent TFTP probes, including read requests for `r7tftp.txt`, but received no response. Nmap reported `open|filtered` because it could not determine whether the port was open but silent or filtered.
 - **UDP 161:** Metasploitable returned ICMP Type 3, Code 3 (Port Unreachable), indicating the port was closed.
 
-The capture also showed Kali sending ICMP Port Unreachable errors after receiving DNS responses. These concerned temporary UDP ports on Kali rather than Metasploitable's DNS port.
+The capture also showed Kali sending ICMP Port Unreachable messages after receiving DNS responses. These messages did not indicate that Metasploitable's DNS port was closed.
 
 ![UDP packet analysis in Wireshark](images/13-udp-packet-analysis.png)
 
@@ -369,9 +367,7 @@ The confirmed open ports were UDP 53 (DNS) and UDP 137 (NetBIOS Name Service).
 
 One difference from the targeted scan was UDP port 161. It was previously reported as `closed`, but the broader scan reported `open|filtered`.
 
-The targeted scan received an ICMP Port Unreachable error, while the broader scan received no response. ICMP rate limiting is one possible explanation, although the exact cause was not confirmed.
-
-This demonstrated that UDP scan results can differ depending on the responses received, without necessarily indicating a change in the actual port state.
+During the targeted scan, Metasploitable returned an ICMP Port Unreachable message for UDP port 161, causing Nmap to report it as closed. During the top-20 scan, Nmap received no response and reported the same port as open|filtered. This demonstrates how UDP scan results can differ based on the responses received, without necessarily indicating a change in the actual port state.
 
 #### NetBIOS Name Service Analysis
 
