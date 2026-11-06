@@ -40,8 +40,6 @@ After updating Kali, I verified that the main tools I planned to use were availa
 - tcpdump
 - Metasploit Framework
 - Netcat
-- John the Ripper
-- Hashcat
 
 Once Kali was updated and the required tools were available, I shut the VM down so it could be moved onto the isolated lab network.
 
